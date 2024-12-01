@@ -1,46 +1,38 @@
 const std = @import("std");
-const Allocator = std.mem.Allocator;
-const List = std.ArrayList;
-const Map = std.AutoHashMap;
-const StrMap = std.StringHashMap;
-const BitSet = std.DynamicBitSet;
-
-const util = @import("util.zig");
-const gpa = util.gpa;
-
 const data = @embedFile("data/day01.txt");
-
-pub fn main() !void {
-    
-}
-
-// Useful stdlib functions
-const tokenizeAny = std.mem.tokenizeAny;
-const tokenizeSeq = std.mem.tokenizeSequence;
-const tokenizeSca = std.mem.tokenizeScalar;
-const splitAny = std.mem.splitAny;
-const splitSeq = std.mem.splitSequence;
-const splitSca = std.mem.splitScalar;
-const indexOf = std.mem.indexOfScalar;
-const indexOfAny = std.mem.indexOfAny;
-const indexOfStr = std.mem.indexOfPosLinear;
-const lastIndexOf = std.mem.lastIndexOfScalar;
-const lastIndexOfAny = std.mem.lastIndexOfAny;
-const lastIndexOfStr = std.mem.lastIndexOfLinear;
-const trim = std.mem.trim;
-const sliceMin = std.mem.min;
-const sliceMax = std.mem.max;
-
-const parseInt = std.fmt.parseInt;
-const parseFloat = std.fmt.parseFloat;
-
 const print = std.debug.print;
-const assert = std.debug.assert;
 
+const splitAny = std.mem.splitAny;
+const parseInt = std.fmt.parseInt;
+const trim = std.mem.trim;
 const sort = std.sort.block;
 const asc = std.sort.asc;
-const desc = std.sort.desc;
 
-// Generated from template/template.zig.
-// Run `zig build generate` to update.
-// Only unmodified days will be updated.
+pub fn main() !void {
+    var rows = splitAny(u8, data, "\n");
+    var left: [1000]u32 = undefined;
+    var right: [1000]u32 = undefined;
+    var index: u32 = 0;
+    while (rows.next()) |row| {
+        if (index == 1000) break;
+        var row_split = splitAny(u8, row, "   ");
+        const row_left = trim(u8, row_split.first(), " ");
+        const row_right = trim(u8, row_split.rest(), " ");
+        left[index] = try parseInt(u32, row_left, 10);
+        right[index] = try parseInt(u32, row_right, 10);
+        index += 1;
+    }
+
+    //part 1
+    sort(u32, &left, {}, asc(u32));
+    sort(u32, &right, {}, asc(u32));
+    var total: u64 = 0;
+    for (0..left.len) |i| {
+        const diff: i64 = @as(i64, left[i]) - @as(i64, right[i]);
+        total += @abs(diff);
+    }
+    print("total: {}", .{total});
+
+    //part 2
+    //to be continued
+}
