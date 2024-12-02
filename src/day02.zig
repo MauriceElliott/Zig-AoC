@@ -58,10 +58,6 @@ pub fn main() !void {
         }
         reports[i] = parsed_report;
         i += 1;
-        // print(" report: ", .{});
-        // for (0..parsed_report.len) |n| {
-        //     print(" {} ", .{parsed_report[n]});
-        // }
     }
 
     //PART 1
@@ -93,6 +89,7 @@ pub fn main() !void {
                     } else {
                         unsafeincreaseamount = current_node;
                         previousnodeunsafe = previous_node;
+                        percievedsafe = safe_increase;
                         notsafe += 1;
                         break;
                     }
@@ -114,7 +111,7 @@ pub fn main() !void {
             }
             previous_node = current_node;
         }
-        if (r == 997) break;
+        if (r == 998) break;
     }
     print("elsecount: {}\n", .{elsecount});
     print("safe: {}\n", .{safe - notsafe});
