@@ -10,10 +10,6 @@ const gpa = util.gpa;
 
 const data = @embedFile("data/day02.txt");
 
-pub fn main() !void {
-    
-}
-
 // Useful stdlib functions
 const tokenizeAny = std.mem.tokenizeAny;
 const tokenizeSeq = std.mem.tokenizeSequence;
@@ -44,3 +40,20 @@ const desc = std.sort.desc;
 // Generated from template/template.zig.
 // Run `zig build generate` to update.
 // Only unmodified days will be updated.
+
+pub fn main() !void {
+    var rows = splitAny(u8, data, "\n");
+    var i: u32 = 0;
+    while (rows.next()) |row| {
+        if (i == 1000) break;
+        var report = tokenizeSeq(u8, row, " ");
+        var parsed_report: [8]u8 = undefined;
+        var j: u8 = 0;
+        while (report.next()) |node| {
+            parsed_report[j] = try parseInt(u8, node, 10);
+            j += 1;
+        }
+        print("report: {}, {}, {} \n", .{ parsed_report[0], parsed_report[1], parsed_report[2] });
+        i += 1;
+    }
+}
