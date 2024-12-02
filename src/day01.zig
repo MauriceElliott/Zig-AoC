@@ -23,16 +23,31 @@ pub fn main() !void {
         index += 1;
     }
 
-    //part 1
     sort(u32, &left, {}, asc(u32));
     sort(u32, &right, {}, asc(u32));
+
+    //part 1
     var total: u64 = 0;
     for (0..left.len) |i| {
         const diff: i64 = @as(i64, left[i]) - @as(i64, right[i]);
         total += @abs(diff);
     }
-    print("total: {}", .{total});
+    print("total: {}\n", .{total});
 
     //part 2
-    //to be continued
+    total = 0;
+    for (0..left.len) |i| {
+        const search = left[i];
+        var occurences: u32 = 0;
+        for (0..right.len) |j| {
+            if (right[j] == search) {
+                occurences += 1;
+            }
+            if (right[j] > search) {
+                break;
+            }
+        }
+        total += search * occurences;
+    }
+    print("similarity: {}", .{total});
 }
