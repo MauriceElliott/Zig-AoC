@@ -42,8 +42,11 @@ const desc = std.sort.desc;
 // Only unmodified days will be updated.
 
 pub fn main() !void {
+
+    //PARSE DATA
     var rows = splitAny(u8, data, "\n");
     var i: u32 = 0;
+    var reports: [1000][8]u8 = undefined;
     while (rows.next()) |row| {
         if (i == 1000) break;
         var report = tokenizeSeq(u8, row, " ");
@@ -53,7 +56,70 @@ pub fn main() !void {
             parsed_report[j] = try parseInt(u8, node, 10);
             j += 1;
         }
-        print("report: {}, {}, {} \n", .{ parsed_report[0], parsed_report[1], parsed_report[2] });
+        reports[i] = parsed_report;
         i += 1;
+        // print(" report: ", .{});
+        // for (0..parsed_report.len) |n| {
+        //     print(" {} ", .{parsed_report[n]});
+        // }
     }
+
+    //PART 1
+    const safe: u32 = 1000;
+    var notsafe: u32 = 0;
+    var elsecount: u32 = 0;
+    var safeincreaseamount: u32 = 0;
+    var safedecreaseamount: u32 = 0;
+    var unsafeincreaseamount: u32 = 0;
+    var unsafedecreaseamount: u32 = 0;
+    var percievedsafe: u32 = 0;
+    for (0..reports.len) |r| {
+        unsafeincreaseamount = 0;
+        unsafedecreaseamount = 0;
+        safeincreaseamount = 0;
+        safedecreaseamount = 0;
+        var previous_node: u8 = 0;
+        var should_increase: ?bool = null;
+        for (0..reports[r].len) |n| {
+            const current_node: u8 = reports[r][n];
+            if (n > 0) {
+                if (n == (reports[r].len)) break;
+                if (current_node > previous_node and (should_increase == null or should_increase == true)) {
+                    should_increase = true;
+                    const safe_increase = previous_node + 3;
+                    if (current_node <= safe_increase) {
+                        safeincreaseamount = current_node;
+                        percievedsafe = safe_increase;
+                    } else {
+                        unsafeincreaseamount = current_node;
+                        notsafe += 1;
+                        break;
+                    }
+                } else if (current_node < previous_node and (should_increase == null or should_increase == false)) {
+                    should_increase = false;
+                    const safe_decrease = previous_node - 3;
+                    if (current_node >= safe_decrease) {
+                        safedecreaseamount = current_node;
+                    } else {
+                        unsafedecreaseamount = current_node;
+                        notsafe += 1;
+                        break;
+                    }
+                } else {
+                    elsecount += 1;
+                    notsafe += 1;
+                    break;
+                }
+            }
+            previous_node = current_node;
+        }
+        // if (r == 2) break;
+    }
+    print("elsecount: {}\n", .{elsecount});
+    print("safe: {}\n", .{safe - notsafe});
+    print("decreasecamount: {}\n", .{safedecreaseamount});
+    print("increasecamount: {}\n", .{safeincreaseamount});
+    print("unsafedecreaseamount {}\n", .{unsafedecreaseamount});
+    print("unsafeincreaseamount {}\n", .{unsafeincreaseamount});
+    print("percieved {}\n", .{percievedsafe});
 }
