@@ -73,6 +73,7 @@ pub fn main() !void {
     var unsafeincreaseamount: u32 = 0;
     var unsafedecreaseamount: u32 = 0;
     var percievedsafe: u32 = 0;
+    var previousnodeunsafe: u32 = 0;
     for (0..reports.len) |r| {
         unsafeincreaseamount = 0;
         unsafedecreaseamount = 0;
@@ -83,7 +84,6 @@ pub fn main() !void {
         for (0..reports[r].len) |n| {
             const current_node: u8 = reports[r][n];
             if (n > 0) {
-                if (n == (reports[r].len)) break;
                 if (current_node > previous_node and (should_increase == null or should_increase == true)) {
                     should_increase = true;
                     const safe_increase = previous_node + 3;
@@ -92,6 +92,7 @@ pub fn main() !void {
                         percievedsafe = safe_increase;
                     } else {
                         unsafeincreaseamount = current_node;
+                        previousnodeunsafe = previous_node;
                         notsafe += 1;
                         break;
                     }
@@ -113,7 +114,7 @@ pub fn main() !void {
             }
             previous_node = current_node;
         }
-        // if (r == 2) break;
+        if (r == 997) break;
     }
     print("elsecount: {}\n", .{elsecount});
     print("safe: {}\n", .{safe - notsafe});
@@ -122,4 +123,5 @@ pub fn main() !void {
     print("unsafedecreaseamount {}\n", .{unsafedecreaseamount});
     print("unsafeincreaseamount {}\n", .{unsafeincreaseamount});
     print("percieved {}\n", .{percievedsafe});
+    print("prev {}\n", .{previousnodeunsafe});
 }
