@@ -3,6 +3,7 @@ const data = @embedFile("data/day02.txt");
 const tokenizeSeq = std.mem.tokenizeSequence;
 const splitAny = std.mem.splitAny;
 const print = std.debug.print;
+const parseInt = std.fmt.parseInt;
 
 const Direction = enum {
     increase,
@@ -38,14 +39,21 @@ fn isSafe(report: *[8]u8) bool {
 
 fn isAlmostSafe(report: *[8]u8) bool {
     var direction: Direction = undefined;
-    if (report[0] > report[3]) {
+    if (report[0] > report[3] and report[0] > report[2]) {
         direction = Direction.decrease;
-    } else {
+    } else if (report[0] < report[4] and report[0] < report[2]) {
         direction = Direction.increase;
+    } else {
+        if (report[1] > report[2]) {
+            direction = Direction.decrease;
+        } else {
+            direction = Direction.increase;
+        }
     }
     var offense_index: usize = 0;
     var retry = false;
     for (0..report.len) |r| {
+        print("report: {}\n", .{report[r]});
         if (r == 0) continue;
         const current: i32 = report[r];
         const previous: i32 = report[r - 1];
@@ -67,6 +75,7 @@ fn isAlmostSafe(report: *[8]u8) bool {
             const current: i32 = report[r];
             if (current == 170) break;
             if (r == offense_index) {
+                print("should go in here! {}\n", .{r});
                 offense_detected = true;
             }
             if (r > 0 and offense_detected == false) {
@@ -104,10 +113,19 @@ fn isAlmostSafe(report: *[8]u8) bool {
             if (current == 170) break;
             if (r == (offense_index - 1)) {
                 offense_detected = true;
+                print("offense_detected: {}\n", .{r});
             }
             if (r > 0 and offense_detected == false) {
-                const diff = current - previous;
+                var diff = current - previous;
+                if (diff > 0 and direction == Direction.decrease) {
+                    diff = -diff;
+                }
                 if (isCausingAnOffense(diff, direction)) {
+                    print("should not go in here! {}\n", .{current});
+                    print("previous silly bugger: {}\n", .{previous});
+                    print("direction: {}\n", .{direction});
+                    print("diff: {}\n", .{diff});
+                    print("shouldn't in here!\n", .{});
                     three_not_offensive = false;
                     break;
                 }
@@ -116,6 +134,7 @@ fn isAlmostSafe(report: *[8]u8) bool {
                 previous = current;
             }
         }
+        print("One not offense: {}\n", .{(one_not_offensive or two_not_offensive or three_not_offensive)});
         return (one_not_offensive or two_not_offensive or three_not_offensive);
     }
     return true;
@@ -140,23 +159,24 @@ pub fn main() !void {
         i += 1;
     }
 
-    var safe: u32 = 0;
-    for (0..reports.len) |r| {
-        if (isSafe(&reports[r])) {
-            safe += 1;
-        }
-    }
+    // var safe: u32 = 0;
+    // for (0..reports.len) |r| {
+    //     if (isSafe(&reports[r])) {
+    //         safe += 1;
+    //     }
+    // }
 
-    print("safe: {} \n", .{safe});
+    // print("safe: {} \n", .{safe});
 
     var almost_safe: u32 = 0;
     for (0..reports.len) |r| {
         if (isAlmostSafe(&reports[r])) {
             almost_safe += 1;
         }
-        // if (r == 100) {
-        //     print("isSafe: {}\n", .{isSafe(&reports[r])});
+        // if (r == 1) {
+        //     // print("isSafe: {}\n", .{isSafe(&reports[r])});
         //     print("isAlmostSafe: {}\n", .{isAlmostSafe(&reports[r])});
+        //     break;
         // }
     }
 
