@@ -1,45 +1,9 @@
 const std = @import("std");
-const Allocator = std.mem.Allocator;
-const List = std.ArrayList;
-const Map = std.AutoHashMap;
-const StrMap = std.StringHashMap;
-const BitSet = std.DynamicBitSet;
-
-const util = @import("util.zig");
-const gpa = util.gpa;
-
 const data = @embedFile("data/day02.txt");
-
-// Useful stdlib functions
-const tokenizeAny = std.mem.tokenizeAny;
 const tokenizeSeq = std.mem.tokenizeSequence;
-const tokenizeSca = std.mem.tokenizeScalar;
 const splitAny = std.mem.splitAny;
-const splitSeq = std.mem.splitSequence;
-const splitSca = std.mem.splitScalar;
-const indexOf = std.mem.indexOfScalar;
-const indexOfAny = std.mem.indexOfAny;
-const indexOfStr = std.mem.indexOfPosLinear;
-const lastIndexOf = std.mem.lastIndexOfScalar;
-const lastIndexOfAny = std.mem.lastIndexOfAny;
-const lastIndexOfStr = std.mem.lastIndexOfLinear;
-const trim = std.mem.trim;
-const sliceMin = std.mem.min;
-const sliceMax = std.mem.max;
-
-const parseInt = std.fmt.parseInt;
-const parseFloat = std.fmt.parseFloat;
-
 const print = std.debug.print;
-const assert = std.debug.assert;
 
-const sort = std.sort.block;
-const asc = std.sort.asc;
-const desc = std.sort.desc;
-
-// Generated from template/template.zig.
-// Run `zig build generate` to update.
-// Only unmodified days will be updated.
 const Direction = enum {
     increase,
     decrease,
@@ -112,7 +76,9 @@ fn isAlmostSafe(report: *[8]u8) bool {
                     break;
                 }
             }
-            previous = current;
+            if (offense_detected == false) {
+                previous = current;
+            }
         }
         for (0..report.len) |r| {
             var offense_detected: bool = false;
@@ -128,7 +94,9 @@ fn isAlmostSafe(report: *[8]u8) bool {
                     break;
                 }
             }
-            previous = current;
+            if (offense_detected == false) {
+                previous = current;
+            }
         }
         for (0..report.len) |r| {
             var offense_detected: bool = false;
@@ -144,7 +112,9 @@ fn isAlmostSafe(report: *[8]u8) bool {
                     break;
                 }
             }
-            previous = current;
+            if (offense_detected == false) {
+                previous = current;
+            }
         }
         return (one_not_offensive or two_not_offensive or three_not_offensive);
     }
@@ -184,6 +154,10 @@ pub fn main() !void {
         if (isAlmostSafe(&reports[r])) {
             almost_safe += 1;
         }
+        // if (r == 100) {
+        //     print("isSafe: {}\n", .{isSafe(&reports[r])});
+        //     print("isAlmostSafe: {}\n", .{isAlmostSafe(&reports[r])});
+        // }
     }
 
     print("almost safe: {}\n", .{almost_safe});
