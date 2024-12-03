@@ -41,6 +41,30 @@ const desc = std.sort.desc;
 // Run `zig build generate` to update.
 // Only unmodified days will be updated.
 
+fn is_safe(report: *[8]u8) bool {
+    const Direction = enum {
+        increase,
+        decrease,
+    };
+    var direction: Direction = undefined;
+    if (report[0] > report[3]) {
+        direction = Direction.decrease;
+    } else {
+        direction = Direction.increase;
+    }
+    for (0..report.len) |r| {
+        if (r == 0) continue;
+        const current: i32 = report[r];
+        const previous: i32 = report[r - 1];
+        if (current == 170) break;
+        const diff = current - previous;
+        if (diff > 3 or diff < -3 or diff == 0 or (diff < 0 and direction == Direction.increase) or (diff > 0 and direction == Direction.decrease)) {
+            return false;
+        }
+    }
+    return true;
+}
+
 pub fn main() !void {
 
     //PARSE DATA
@@ -51,74 +75,20 @@ pub fn main() !void {
         if (i == 1000) break;
         var report = tokenizeSeq(u8, row, " ");
         var parsed_report: [8]u8 = undefined;
-        var j: u8 = 0;
+        var n: u8 = 0;
         while (report.next()) |node| {
-            parsed_report[j] = try parseInt(u8, node, 10);
-            j += 1;
+            parsed_report[n] = try parseInt(u8, node, 10);
+            n += 1;
         }
         reports[i] = parsed_report;
         i += 1;
     }
 
-    //PART 1
-    const safe: u32 = 1000;
-    var notsafe: u32 = 0;
-    var elsecount: u32 = 0;
-    var safeincreaseamount: u32 = 0;
-    var safedecreaseamount: u32 = 0;
-    var unsafeincreaseamount: u32 = 0;
-    var unsafedecreaseamount: u32 = 0;
-    var percievedsafe: u32 = 0;
-    var previousnodeunsafe: u32 = 0;
+    var safe: u32 = 0;
     for (0..reports.len) |r| {
-        unsafeincreaseamount = 0;
-        unsafedecreaseamount = 0;
-        safeincreaseamount = 0;
-        safedecreaseamount = 0;
-        var previous_node: u8 = 0;
-        var should_increase: ?bool = null;
-        for (0..reports[r].len) |n| {
-            const current_node: u8 = reports[r][n];
-            if (n > 0) {
-                if (current_node > previous_node and (should_increase == null or should_increase == true)) {
-                    should_increase = true;
-                    const safe_increase = previous_node + 3;
-                    if (current_node <= safe_increase) {
-                        safeincreaseamount = current_node;
-                        percievedsafe = safe_increase;
-                    } else {
-                        unsafeincreaseamount = current_node;
-                        previousnodeunsafe = previous_node;
-                        percievedsafe = safe_increase;
-                        notsafe += 1;
-                        break;
-                    }
-                } else if (current_node < previous_node and (should_increase == null or should_increase == false)) {
-                    should_increase = false;
-                    const safe_decrease = previous_node - 3;
-                    if (current_node >= safe_decrease) {
-                        safedecreaseamount = current_node;
-                    } else {
-                        unsafedecreaseamount = current_node;
-                        notsafe += 1;
-                        break;
-                    }
-                } else {
-                    elsecount += 1;
-                    notsafe += 1;
-                    break;
-                }
-            }
-            previous_node = current_node;
+        if (is_safe(&reports[r])) {
+            safe += 1;
         }
-        if (r == 998) break;
     }
-    print("elsecount: {}\n", .{elsecount});
-    print("safe: {}\n", .{safe - notsafe});
-    print("decreasecamount: {}\n", .{safedecreaseamount});
-    print("increasecamount: {}\n", .{safeincreaseamount});
-    print("unsafedecreaseamount {}\n", .{unsafedecreaseamount});
-    print("unsafeincreaseamount {}\n", .{unsafeincreaseamount});
-    print("percieved {}\n", .{percievedsafe});
-    print("prev {}\n", .{previousnodeunsafe});
+    print("safe: {} \n", .{safe});
 }
