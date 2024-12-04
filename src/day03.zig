@@ -36,13 +36,15 @@ fn parseCharacter(character: u8, current_state: State) State {
 }
 
 pub fn main() !void {
-    const memory = "xxxxmul"; //"xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))";
+    const memory = "xxmuxul"; //"xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))";
     var character_state: State = State.none;
     for (0..memory.len) |s| {
         character_state = parseCharacter(memory[s], character_state);
     }
     if (character_state == State.l) {
-        print("correct!", .{});
+        print("correct! \n", .{});
+    } else {
+        print("Incorrect! \n", .{});
     }
 }
 
