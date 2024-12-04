@@ -1,17 +1,49 @@
 const std = @import("std");
-const Allocator = std.mem.Allocator;
-const List = std.ArrayList;
-const Map = std.AutoHashMap;
-const StrMap = std.StringHashMap;
-const BitSet = std.DynamicBitSet;
-
-const util = @import("util.zig");
-const gpa = util.gpa;
-
 const data = @embedFile("data/day03.txt");
 
+const State: type = enum {
+    m,
+    u,
+    l,
+    par_open,
+    par_close,
+    n1,
+    n2,
+    comma,
+    none,
+};
+
+fn parseCharacter(character: u8, current_state: State) State {
+    const state: State = switch (character) {
+        'm' => State.m,
+        'u' => {
+            if (current_state == State.m) {
+                return State.u;
+            } else {
+                return State.none;
+            }
+        },
+        'l' => {
+            if (current_state == State.u) {
+                return State.l;
+            } else {
+                return State.none;
+            }
+        },
+        else => State.none,
+    };
+    return state;
+}
+
 pub fn main() !void {
-    
+    const memory = "xxxxmul"; //"xmul(2,4)%&mul[3,7]!@^do_not_mul(5,5)+mul(32,64]then(mul(11,8)mul(8,5))";
+    var character_state: State = State.none;
+    for (0..memory.len) |s| {
+        character_state = parseCharacter(memory[s], character_state);
+    }
+    if (character_state == State.l) {
+        print("correct!", .{});
+    }
 }
 
 // Useful stdlib functions

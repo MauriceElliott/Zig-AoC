@@ -10,8 +10,6 @@ const required_zig_version = std.SemanticVersion.parse("0.13.0") catch unreachab
 fn linkObject(b: *Build, obj: *CompileStep) void {
     if (should_link_libc) obj.linkLibC();
     _ = b;
-
-    // Add linking for packages or third party libraries here
 }
 
 pub fn build(b: *Build) void {
