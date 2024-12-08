@@ -28,7 +28,7 @@ fn parseCharacter(character: u8, current_state: State) State {
         else => State.none,
     };
     return state;
-}
+} //hello, this is a comment
 
 fn search(wordsearch: [140][]const u8, position: Vector) bool {
     var up_left: bool = false;
