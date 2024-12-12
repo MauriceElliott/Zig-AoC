@@ -4,14 +4,46 @@ const List = std.ArrayList;
 const Map = std.AutoHashMap;
 const StrMap = std.StringHashMap;
 const BitSet = std.DynamicBitSet;
+const eql = std.mem.eql;
 
 const util = @import("util.zig");
 const gpa = util.gpa;
 
-const data = @embedFile("data/day05.txt");
+const data = @embedFile("data/day05_sample.txt");
 
 pub fn main() !void {
-    
+    var split = splitAny(u8, data, "\n\n");
+    var rules_rows = splitAny(u8, split.first(), "\n");
+    var pages_rows = splitAny(u8, split.rest(), "\n");
+    var rules: [][]u8 = undefined;
+    var pages: [][]u8 = undefined;
+    var index: usize = 0;
+
+    while (rules_rows.next()) |row| {
+        if (eql(u8, row, "")) break;
+        var jindex: usize = 0;
+        var rules_row = tokenizeSeq(u8, row, "|");
+        while (rules_row.next()) |val| {
+            if (eql(u8, val, "")) break;
+            rules[index][jindex] = try parseInt(u8, val, 10);
+            print("rules: {}\n", .{rules[index][jindex]});
+            jindex += 1;
+        }
+        index += 1;
+    }
+    index = 0;
+    while (pages_rows.next()) |row| {
+        if (eql(u8, row, "")) break;
+        var jindex: usize = 0;
+        var pages_row = tokenizeSeq(u8, row, "|");
+        while (pages_row.next()) |val| {
+            if (eql(u8, val, "")) break;
+            pages[index][jindex] = try parseInt(u8, val, 10);
+            print("pages: {}\n", .{pages[index][jindex]});
+            jindex += 1;
+        }
+        index += 1;
+    }
 }
 
 // Useful stdlib functions
