@@ -11,6 +11,12 @@ const gpa = util.gpa;
 
 const data = @embedFile("data/day05_sample.txt");
 
+fn enforceRules(rules: *[]const u8, pages: *[]const u8) ![]u8 {
+    for (0..rules.len) |i| {
+        for (0..pages.len) |j| {}
+    }
+}
+
 pub fn main() !void {
     var split = splitSeq(u8, data, "\n\n");
     var rules_rows = splitAny(u8, split.first(), "\n");
